@@ -2,10 +2,11 @@ name: chess-rl-agent
 channels:
   - defaults
 dependencies:
-  - python=3.9.18
-  - numpy=1.20.*
+  - python=3.10
   - pip=23.3.1
   - pip:
-    - torch==2.2.1
-    - tqdm==4.66.2
+    - numpy
+    - torch
+    - tqdm
+    - pygame
     - python-chess
