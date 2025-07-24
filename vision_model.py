@@ -6,22 +6,19 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+side_mapping = {
+    "white": "w",
+    "black": "b"
+}
 
-def load_engine():
-    return Stockfish(path=os.getenv("PATH_STOCKFISH_ENGINE"), depth=18, parameters={"Threads": 8, "Minimum Thinking Time": 30, "Hash": 2048})
+params_engine = {
+    "Threads": 8, 
+    "Minimum Thinking Time": 30, 
+    "Hash": 2048
+}
 
+engine = Stockfish(path=os.getenv("PATH_STOCKFISH_ENGINE"), depth=18, parameters=params_engine)
 
-def get_fen_string_from_chessboard_image(path_image):
-    client = Client("yamero999/chess-fen-generation-api")
-    result = client.predict(
-            image=handle_file(path_image),
-            api_name="/predict_ui"
-    )
-    return result[0]
-
-# Process this string
-fen_string = get_fen_string_from_chessboard_image("chessboard.jpg")
-side_to_move = "b"
 
 def process_fen_string(current_string, side_to_move):
     parts = current_string.split()
@@ -35,12 +32,25 @@ def process_fen_string(current_string, side_to_move):
         parts[2] = "-"
     # Join everything back into a FEN string
     new_fen = " ".join(parts)
+    return new_fen
 
-processed_fen_string = process_fen_string(fen_string, side_to_move)
+def get_fen_string_from_chessboard_image(path_image, side_to_move):
+    client = Client("yamero999/chess-fen-generation-api")
+    result = client.predict(
+            image=handle_file(path_image),
+            api_name="/predict_ui"
+    )
+    fen_string = result[0]
+    if side_to_move in ["white", "black"]:
+        side_to_move = side_mapping[side_to_move]
+    return process_fen_string(fen_string, side_to_move)
 
-engine = load_engine()
+def compute_top_k_best_move(fen_string, k=3):
+    engine.set_fen_position(fen_string)
+    return engine.get_top_moves(k)
 
-# Predict the next move with Stockfish
-engine.set_fen_position(processed_fen_string)
-print(engine.get_best_move())
-print(engine.get_top_moves(3))
+
+if __name__ == "__main__":
+    side_to_move = "b"
+    fen_string = get_fen_string_from_chessboard_image("chessboard.jpg", side_to_move)
+    next_moves = compute_top_k_best_move(fen_string, engine)    
