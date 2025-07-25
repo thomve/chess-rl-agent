@@ -34,7 +34,7 @@ def process_fen_string(current_string, side_to_move):
     new_fen = " ".join(parts)
     return new_fen
 
-def get_fen_string_from_chessboard_image(path_image, side_to_move):
+def get_fen_string_from_image_path(path_image, side_to_move):
     client = Client("yamero999/chess-fen-generation-api")
     result = client.predict(
             image=handle_file(path_image),
