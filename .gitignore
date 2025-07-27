@@ -3,3 +3,7 @@ __pycache__
 chess_agent.pth
 
 .env
+
+*.json*
+
+node_modules/

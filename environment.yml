@@ -10,3 +10,4 @@ dependencies:
     - tqdm
     - pygame
     - python-chess
+    - rich

@@ -1,8 +1,12 @@
 import os
+import chess
+import chess.svg
+import cairosvg
 
 from gradio_client import Client, handle_file
 from stockfish import Stockfish
 from dotenv import load_dotenv
+from rich import print
 
 load_dotenv()
 
@@ -51,6 +55,8 @@ def compute_top_k_best_move(fen_string, k=3):
 
 
 if __name__ == "__main__":
+    print("[bold green]Computing fen string[/bold green]!")
     side_to_move = "b"
-    fen_string = get_fen_string_from_chessboard_image("chessboard.jpg", side_to_move)
-    next_moves = compute_top_k_best_move(fen_string, engine)    
+    fen_string = get_fen_string_from_image_path("chessboard.jpg", side_to_move)
+    next_moves = compute_top_k_best_move(fen_string)
+    print(next_moves)
