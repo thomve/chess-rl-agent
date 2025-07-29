@@ -48,8 +48,34 @@ def get_fen_string_from_image_path(path_image, side_to_move):
 
 def compute_top_k_best_move(fen_string, k=3):
     engine.set_fen_position(fen_string)
-    return engine.get_top_moves(k)
+    best_moves = engine.get_top_moves(k)
+    list_best_fen_moves = compute_fen_strings_from_best_moves(best_moves)
+    list_iframes = get_list_iframe(list_best_fen_moves)
+    return best_moves, list_iframes[0], list_iframes[1], list_iframes[2]
 
+def compute_fen_strings_from_best_moves(moves):
+    current_fen_string = engine.get_fen_position()
+    list_fen_string = []
+    for move in moves:
+        engine.make_moves_from_current_position([move['Move']])
+        fen_string_move = engine.get_fen_position()
+        engine.set_fen_position(current_fen_string)
+        list_fen_string.append(fen_string_move)
+    return list_fen_string
+
+
+iframe_html = """<iframe src="http://localhost:3000/chessboard.html?fen={}"
+        width="500"
+        height="500"
+        frameborder="0"
+        style="border: none; overflow: hidden;"></iframe>
+"""
+
+def get_list_iframe(list_fen_string):
+    list_iframe = []
+    for fen_string in list_fen_string:
+        list_iframe.append(iframe_html.format(fen_string))
+    return list_iframe
 
 if __name__ == "__main__":
     print("[bold green]Computing fen string[/bold green]!")
